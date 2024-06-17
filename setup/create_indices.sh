@@ -25,7 +25,8 @@ curl -X PUT "http://localhost:9200/email_messages" -H 'Content-Type: application
       "messageId": { "type": "keyword" },
       "subject": { "type": "text" },
       "body": { "type": "text" },
-      "receivedDate": { "type": "date" }
+      "receivedDate": { "type": "date" },
+      "isRead": { "type": "boolean" }
     }
   }
 }

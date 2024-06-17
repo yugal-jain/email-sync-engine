@@ -64,6 +64,7 @@ module.exports = {
                     receivedDate: email.receivedDateTime,
                     senderName: email.from?.emailAddress?.name,
                     senderEmail: email.from?.emailAddress?.address,
+                    isRead: email.isRead
                 }));
 
                 await elasticsearchService.bulkSaveEmails(emailDocs);

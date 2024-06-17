@@ -17,11 +17,12 @@ module.exports = (msalClient, userId) => {
 
             // Process each email to check if it already exists in Elasticsearch
             for (const email of emails) {
+                // Check if the email exists in Elasticsearch
                 const emailExists = await elasticsearchService.checkIfEmailMessageExists(email.id);
 
-                if (!emailExists) {
-                    // If email does not exist, save it to Elasticsearch
-                    const emailDoc = {
+                if (emailExists) {
+                    // If email exists, update it in Elasticsearch
+                    const updatedEmailDoc = {
                         userId: userId,
                         messageId: email.id,
                         subject: email.subject,
@@ -29,12 +30,27 @@ module.exports = (msalClient, userId) => {
                         receivedDate: email.receivedDateTime,
                         senderName: email.from?.emailAddress?.name,
                         senderEmail: email.from?.emailAddress?.address,
+                        isRead: email.isRead
                     };
 
-                    await elasticsearchService.saveEmailMessage(emailDoc);
+                    await elasticsearchService.updateFetchedEmails(email.id, updatedEmailDoc);
+                } else {
+                    // If email does not exist, save it to Elasticsearch
+                    const newEmailDoc = {
+                        userId: userId,
+                        messageId: email.id,
+                        subject: email.subject,
+                        body: email.bodyPreview,
+                        receivedDate: email.receivedDateTime,
+                        senderName: email.from?.emailAddress?.name,
+                        senderEmail: email.from?.emailAddress?.address,
+                        isRead: email.isRead
+                    };
+
+                    await elasticsearchService.saveEmailMessage(newEmailDoc);
                 }
             }
-
+            await handleDeletedEmails(userId, emails);
             // Update lastSyncTime for the user in Elasticsearch
             await elasticsearchService.updateLastSyncTime(userId, new Date().toISOString());
 
@@ -44,3 +60,23 @@ module.exports = (msalClient, userId) => {
         }
     });
 };
+
+
+async function handleDeletedEmails(userId, fetchedEmails) {
+    try {
+        // Fetch all email messages currently stored in Elasticsearch for the user
+        const storedEmails = await elasticsearchService.getAllEmailMessages();
+
+        // Identify emails that are present in Elasticsearch but not in the fetchedEmails
+        const emailsToDelete = storedEmails.filter(storedEmail => !fetchedEmails.find(fetchedEmail => fetchedEmail.id === storedEmail.messageId));
+
+        // Delete identified emails from Elasticsearch
+        for (const emailToDelete of emailsToDelete) {
+            await elasticsearchService.deleteEmailById(emailToDelete.messageId);
+            console.log(`Deleted email message ${emailToDelete.messageId} for user ${userId}`);
+        }
+    } catch (error) {
+        console.error(`Error handling deleted emails for user ${userId}:`, error);
+        throw error;
+    }
+}

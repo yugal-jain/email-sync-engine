@@ -23,6 +23,7 @@ async function createIndices() {
             mappings: {
                 properties: {
                     userId: { type: 'keyword' },
+                    isRead: { type: 'boolean' },
                     messageId: { type: 'keyword' },
                     subject: { type: 'text' },
                     body: { type: 'text' },
