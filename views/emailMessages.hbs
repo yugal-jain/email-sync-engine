@@ -1,0 +1,32 @@
+<div class="container mt-5">
+    <h1 class="mb-3">Email Inbox</h1>
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th scope="col">Sender Name</th>
+                <th scope="col">Sender Email</th>
+                <th scope="col">Subject</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each emailMessages}}
+            <tr>
+                <td>{{this.senderName}}</td>
+                <td>{{this.senderEmail}}</td>
+                <td>{{this.subject}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<script>
+    // Function to reload the page every 5 seconds
+    function reloadPage() {
+        setTimeout(() => {
+            location.reload(true); // Reload the page
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
+
+    // Call reloadPage() to start reloading the page
+    reloadPage();
+</script>
