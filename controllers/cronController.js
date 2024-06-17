@@ -1,10 +1,17 @@
 const cron = require('node-cron');
 const elasticsearchService = require('../services/elasticSearchService');
 const graph = require('../services/graphService');
+const cronJobs = {};
 
 module.exports = (msalClient, userId) => {
-    // Cron job to fetch email updates every 5 minutes
-    cron.schedule('*/5 * * * * *', async () => {
+    // Cancel existing cron job if it exists
+    if (cronJobs[userId]) {
+        cronJobs[userId].stop();
+        delete cronJobs[userId]; // Remove from dictionary
+    }
+
+    // Cron job to fetch email updates every 5 seconds
+    cronJobs[userId] = cron.schedule('*/5 * * * * *', async () => {
         console.log('Running cron job to fetch email updates for user:', userId);
 
         try {
@@ -58,9 +65,13 @@ module.exports = (msalClient, userId) => {
         } catch (error) {
             console.error(`Error during email synchronization for user ${userId}:`, error);
         }
+    }, {
+        scheduled: false // Start cron job manually after initialization
     });
-};
 
+    // Start the cron job immediately after initialization
+    cronJobs[userId].start();
+};
 
 async function handleDeletedEmails(userId, fetchedEmails) {
     try {
@@ -80,3 +91,13 @@ async function handleDeletedEmails(userId, fetchedEmails) {
         throw error;
     }
 }
+
+module.exports.cancelCronJob = (userId) => {
+    if (cronJobs[userId]) {
+        cronJobs[userId].stop();
+        delete cronJobs[userId]; // Optionally remove from dictionary
+        console.log(`Cancelled cron job for user ${userId}`);
+    } else {
+        console.warn(`No cron job found for user ${userId}`);
+    }
+};

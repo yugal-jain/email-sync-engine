@@ -96,6 +96,7 @@ module.exports = {
         if (req.session.userId) {
             const accounts = await req.app.locals.msalClient.getTokenCache().getAllAccounts();
             const userAccount = accounts.find(a => a.homeAccountId === req.session.userId);
+            cronJob.cancelCronJob(req.session.userId);
 
             if (userAccount) {
                 req.app.locals.msalClient.getTokenCache().removeAccount(userAccount);
