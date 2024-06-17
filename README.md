@@ -1,6 +1,8 @@
 # email-sync-engine
 A web application built for managing and synchronizing email data from Outlook using Node.js and Elasticsearch. Features include OAuth integration, real-time data synchronization, and scalable database design.
 
+## Demo
+[![Watch the video]([https://img.youtube.com/vi/_5tFXJQIzi4/0.jpg](https://github.com/yugal-jain/email-sync-engine/raw/main/demo.webm))]([https://www.youtube.com/watch?v=_5tFXJQIzi4](https://github.com/yugal-jain/email-sync-engine/raw/main/demo.webm))
 
 ## Prerequisites
 
