@@ -42,11 +42,8 @@ To run this project, ensure you have the following installed:
 ## Configure the Application
 
 1. Rename the `example.env` file to `.env`.
-2. Edit the `.env` file with the following changes:
-   - Replace `YOUR_CLIENT_ID_HERE` with the **Application Id** obtained from the Azure App Registration.
-   - Replace `YOUR_CLIENT_SECRET_HERE` with the client secret obtained from the Azure App Registration.
-
-3. Open a terminal, navigate to the `src` directory, and run the Docker Compose file with `docker-compose up --build`. This will set up Elasticsearch and run the app in a container.
+2. Edit the `.env` file with the following changes.
+3. Open a terminal, navigate to the root directory, and run the Docker Compose file with `docker-compose up`. This will set up Elasticsearch and run the app in a container.
 4. Run the setup script to create indices in Elasticsearch: `docker exec -it email-engine-app /bin/sh`.
 5. Inside the container, navigate to the `setup` directory with `cd setup` and run `node createIndices.js`.
 6. Open a browser and go to `http://localhost:3000`.
